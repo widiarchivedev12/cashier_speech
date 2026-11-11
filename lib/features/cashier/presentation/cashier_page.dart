@@ -8,6 +8,7 @@ import 'package:voice_parser/voice_parser.dart';
 import '../../../core/sync/sync_provider.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
 import '../../catalog/presentation/providers/product_providers.dart';
+import '../../voice/presentation/onboarding_stt_dialog.dart';
 import '../../voice/presentation/providers/voice_provider.dart';
 import '../domain/cart.dart';
 import '../domain/cart_item.dart';
@@ -27,6 +28,14 @@ class CashierPage extends ConsumerStatefulWidget {
 }
 
 class _CashierPageState extends ConsumerState<CashierPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) checkSttOnboarding(context);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final cart = ref.watch(cartProvider);
@@ -81,6 +90,23 @@ class _CashierPageState extends ConsumerState<CashierPage> {
                 context.go('/catalog');
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.history),
+              title: const Text('Riwayat Transaksi'),
+              onTap: () {
+                Navigator.pop(context);
+                context.go('/history');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.bar_chart),
+              title: const Text('Rekap Harian'),
+              onTap: () {
+                Navigator.pop(context);
+                context.go('/reports');
+              },
+            ),
+            const Divider(),
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Keluar'),

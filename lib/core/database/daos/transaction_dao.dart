@@ -50,6 +50,29 @@ class TransactionDao extends DatabaseAccessor<AppDatabase>
         await into(syncOutbox).insert(outbox);
       });
 
+  Future<TransactionRow?> getById(String id) =>
+      (select(transactions)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<List<TransactionRow>> getForDateRange(
+    String storeId,
+    DateTime startUtc,
+    DateTime endUtc,
+  ) =>
+      (select(transactions)
+            ..where((t) =>
+                t.storeId.equals(storeId) &
+                t.deletedAt.isNull() &
+                t.createdAt.isBiggerOrEqualValue(startUtc) &
+                t.createdAt.isSmallerThanValue(endUtc)))
+          .get();
+
+  Future<List<TransactionItemRow>> getItemsForTransactions(
+    List<String> txnIds,
+  ) =>
+      (select(transactionItems)
+            ..where((t) => t.transactionId.isIn(txnIds)))
+          .get();
+
   Future<void> softDelete(String id, DateTime updatedAt) =>
       (update(transactions)..where((t) => t.id.equals(id))).write(
         TransactionsCompanion(
@@ -57,6 +80,21 @@ class TransactionDao extends DatabaseAccessor<AppDatabase>
           updatedAt: Value(updatedAt),
         ),
       );
+
+  Future<void> softDeleteWithOutbox(
+    String id,
+    DateTime updatedAt,
+    SyncOutboxCompanion outbox,
+  ) =>
+      transaction(() async {
+        await (update(transactions)..where((t) => t.id.equals(id))).write(
+          TransactionsCompanion(
+            deletedAt: Value(updatedAt),
+            updatedAt: Value(updatedAt),
+          ),
+        );
+        await into(syncOutbox).insert(outbox);
+      });
 
   Future<void> upsertTxnFromSync(
     TransactionsCompanion txn,

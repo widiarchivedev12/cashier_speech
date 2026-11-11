@@ -11,6 +11,8 @@ import '../features/catalog/domain/product.dart';
 import '../features/catalog/presentation/catalog_page.dart';
 import '../features/catalog/presentation/product_form_page.dart';
 import '../features/cashier/presentation/cashier_page.dart';
+import '../features/history/presentation/history_page.dart';
+import '../features/reports/presentation/reports_page.dart';
 import '../features/voice/presentation/confirmation_page.dart';
 
 part 'router.g.dart';
@@ -34,6 +36,8 @@ GoRouter router(Ref ref) {
         builder: (_, state) =>
             ProductFormPage(product: state.extra as Product?),
       ),
+      GoRoute(path: '/history', builder: (_, __) => const HistoryPage()),
+      GoRoute(path: '/reports', builder: (_, __) => const ReportsPage()),
       GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
       GoRoute(path: '/setup-store', builder: (_, __) => const SetupStorePage()),
     ],

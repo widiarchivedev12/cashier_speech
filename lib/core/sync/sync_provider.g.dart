@@ -48,7 +48,7 @@ final class SyncEngineProvider
   }
 }
 
-String _$syncEngineHash() => r'ef4fd82075b30aac16e1c36adf85bf93cc4e6c6f';
+String _$syncEngineHash() => r'53412bb36893728c13ca30a0a64e5f112ffe7b7b';
 
 @ProviderFor(SyncNotifier)
 final syncProvider = SyncNotifierProvider._();
