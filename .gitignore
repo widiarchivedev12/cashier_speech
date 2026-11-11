@@ -46,3 +46,9 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Env config (berisi Supabase URL + key, jangan di-commit)
+env.json
+
+# Android build artifacts (di-generate, bukan source)
+android/build/

@@ -1,0 +1,2 @@
+-- Seed data untuk development lokal
+-- Jalankan via: supabase db reset
