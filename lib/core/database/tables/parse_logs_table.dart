@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+@DataClassName('ParseLogRow')
 class ParseLogs extends Table {
   TextColumn get id => text()();
   TextColumn get storeId => text()();
