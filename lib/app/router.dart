@@ -4,6 +4,7 @@ import '../features/catalog/domain/product.dart';
 import '../features/catalog/presentation/catalog_page.dart';
 import '../features/catalog/presentation/product_form_page.dart';
 import '../features/cashier/presentation/cashier_page.dart';
+import '../features/voice/presentation/confirmation_page.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/',
@@ -11,6 +12,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => const CashierPage(),
+    ),
+    GoRoute(
+      path: '/confirmation',
+      builder: (context, state) => const ConfirmationPage(),
     ),
     GoRoute(
       path: '/catalog',

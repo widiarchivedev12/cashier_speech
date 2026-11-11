@@ -3,6 +3,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'converters.dart';
+import 'daos/parse_log_dao.dart';
 import 'daos/product_dao.dart';
 import 'daos/transaction_dao.dart';
 import 'tables/parse_logs_table.dart';
@@ -12,6 +13,7 @@ import 'tables/sync_state_table.dart';
 import 'tables/transaction_items_table.dart';
 import 'tables/transactions_table.dart';
 
+export 'daos/parse_log_dao.dart';
 export 'daos/product_dao.dart';
 export 'daos/transaction_dao.dart';
 
@@ -26,7 +28,7 @@ part 'app_database.g.dart';
     SyncOutbox,
     SyncState,
   ],
-  daos: [ProductDao, TransactionDao],
+  daos: [ProductDao, TransactionDao, ParseLogDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());

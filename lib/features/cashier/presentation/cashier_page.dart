@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:voice_parser/voice_parser.dart';
 
 import '../../catalog/presentation/providers/product_providers.dart';
+import '../../voice/presentation/providers/voice_provider.dart';
 import '../domain/cart.dart';
 import '../domain/cart_item.dart';
 import '../presentation/providers/cart_provider.dart';
@@ -15,13 +17,37 @@ final _currency = NumberFormat.currency(
   decimalDigits: 0,
 );
 
-class CashierPage extends ConsumerWidget {
+class CashierPage extends ConsumerStatefulWidget {
   const CashierPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CashierPage> createState() => _CashierPageState();
+}
+
+class _CashierPageState extends ConsumerState<CashierPage> {
+  @override
+  Widget build(BuildContext context) {
     final cart = ref.watch(cartProvider);
     final productsAsync = ref.watch(activeProductsProvider);
+    final voiceState = ref.watch(voiceProvider);
+
+    ref.listen<VoiceState>(voiceProvider, (prev, next) {
+      if (next.isDone && next.parseResult != null) {
+        final catalog = productsAsync.value ?? [];
+        final entries = catalog
+            .map((p) => CatalogEntry(
+                  productId: p.id,
+                  name: p.name,
+                  aliases: p.aliases,
+                  price: p.price,
+                ))
+            .toList();
+        ref
+            .read(cartProvider.notifier)
+            .applyParseResult(next.parseResult!, entries, next.transcript);
+        context.push('/confirmation');
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -55,6 +81,7 @@ class CashierPage extends ConsumerWidget {
           ],
         ),
       ),
+      floatingActionButton: _MicButton(voiceState: voiceState),
       body: Column(
         children: [
           Expanded(
@@ -92,6 +119,26 @@ class CashierPage extends ConsumerWidget {
           _CartSummary(cart: cart),
         ],
       ),
+    );
+  }
+}
+
+class _MicButton extends ConsumerWidget {
+  const _MicButton({required this.voiceState});
+
+  final VoiceState voiceState;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isListening = voiceState.isListening;
+    final notifier = ref.read(voiceProvider.notifier);
+
+    return FloatingActionButton(
+      key: const Key('btn_mic'),
+      onPressed: isListening ? notifier.stopListening : notifier.startListening,
+      backgroundColor: isListening ? Theme.of(context).colorScheme.error : null,
+      tooltip: isListening ? 'Hentikan' : 'Rekam suara',
+      child: Icon(isListening ? Icons.stop : Icons.mic),
     );
   }
 }

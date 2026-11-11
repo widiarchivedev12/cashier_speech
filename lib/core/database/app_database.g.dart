@@ -1545,7 +1545,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItemRow> {
 }
 
 class $ParseLogsTable extends ParseLogs
-    with TableInfo<$ParseLogsTable, ParseLog> {
+    with TableInfo<$ParseLogsTable, ParseLogRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -1613,7 +1613,7 @@ class $ParseLogsTable extends ParseLogs
   String get actualTableName => $name;
   static const String $name = 'parse_logs';
   @override
-  VerificationContext validateIntegrity(Insertable<ParseLog> instance,
+  VerificationContext validateIntegrity(Insertable<ParseLogRow> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1672,9 +1672,9 @@ class $ParseLogsTable extends ParseLogs
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  ParseLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ParseLogRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ParseLog(
+    return ParseLogRow(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       storeId: attachedDatabase.typeMapping
@@ -1700,7 +1700,7 @@ class $ParseLogsTable extends ParseLogs
   }
 }
 
-class ParseLog extends DataClass implements Insertable<ParseLog> {
+class ParseLogRow extends DataClass implements Insertable<ParseLogRow> {
   final String id;
   final String storeId;
   final String? transactionId;
@@ -1709,7 +1709,7 @@ class ParseLog extends DataClass implements Insertable<ParseLog> {
   final String? corrected;
   final String parserVersion;
   final DateTime createdAt;
-  const ParseLog(
+  const ParseLogRow(
       {required this.id,
       required this.storeId,
       this.transactionId,
@@ -1753,10 +1753,10 @@ class ParseLog extends DataClass implements Insertable<ParseLog> {
     );
   }
 
-  factory ParseLog.fromJson(Map<String, dynamic> json,
+  factory ParseLogRow.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ParseLog(
+    return ParseLogRow(
       id: serializer.fromJson<String>(json['id']),
       storeId: serializer.fromJson<String>(json['storeId']),
       transactionId: serializer.fromJson<String?>(json['transactionId']),
@@ -1782,7 +1782,7 @@ class ParseLog extends DataClass implements Insertable<ParseLog> {
     };
   }
 
-  ParseLog copyWith(
+  ParseLogRow copyWith(
           {String? id,
           String? storeId,
           Value<String?> transactionId = const Value.absent(),
@@ -1791,7 +1791,7 @@ class ParseLog extends DataClass implements Insertable<ParseLog> {
           Value<String?> corrected = const Value.absent(),
           String? parserVersion,
           DateTime? createdAt}) =>
-      ParseLog(
+      ParseLogRow(
         id: id ?? this.id,
         storeId: storeId ?? this.storeId,
         transactionId:
@@ -1802,8 +1802,8 @@ class ParseLog extends DataClass implements Insertable<ParseLog> {
         parserVersion: parserVersion ?? this.parserVersion,
         createdAt: createdAt ?? this.createdAt,
       );
-  ParseLog copyWithCompanion(ParseLogsCompanion data) {
-    return ParseLog(
+  ParseLogRow copyWithCompanion(ParseLogsCompanion data) {
+    return ParseLogRow(
       id: data.id.present ? data.id.value : this.id,
       storeId: data.storeId.present ? data.storeId.value : this.storeId,
       transactionId: data.transactionId.present
@@ -1822,7 +1822,7 @@ class ParseLog extends DataClass implements Insertable<ParseLog> {
 
   @override
   String toString() {
-    return (StringBuffer('ParseLog(')
+    return (StringBuffer('ParseLogRow(')
           ..write('id: $id, ')
           ..write('storeId: $storeId, ')
           ..write('transactionId: $transactionId, ')
@@ -1841,7 +1841,7 @@ class ParseLog extends DataClass implements Insertable<ParseLog> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is ParseLog &&
+      (other is ParseLogRow &&
           other.id == this.id &&
           other.storeId == this.storeId &&
           other.transactionId == this.transactionId &&
@@ -1852,7 +1852,7 @@ class ParseLog extends DataClass implements Insertable<ParseLog> {
           other.createdAt == this.createdAt);
 }
 
-class ParseLogsCompanion extends UpdateCompanion<ParseLog> {
+class ParseLogsCompanion extends UpdateCompanion<ParseLogRow> {
   final Value<String> id;
   final Value<String> storeId;
   final Value<String?> transactionId;
@@ -1889,7 +1889,7 @@ class ParseLogsCompanion extends UpdateCompanion<ParseLog> {
         parsed = Value(parsed),
         parserVersion = Value(parserVersion),
         createdAt = Value(createdAt);
-  static Insertable<ParseLog> custom({
+  static Insertable<ParseLogRow> custom({
     Expression<String>? id,
     Expression<String>? storeId,
     Expression<String>? transactionId,
@@ -2630,6 +2630,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final ProductDao productDao = ProductDao(this as AppDatabase);
   late final TransactionDao transactionDao =
       TransactionDao(this as AppDatabase);
+  late final ParseLogDao parseLogDao = ParseLogDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3532,14 +3533,14 @@ class $$ParseLogsTableAnnotationComposer
 class $$ParseLogsTableTableManager extends RootTableManager<
     _$AppDatabase,
     $ParseLogsTable,
-    ParseLog,
+    ParseLogRow,
     $$ParseLogsTableFilterComposer,
     $$ParseLogsTableOrderingComposer,
     $$ParseLogsTableAnnotationComposer,
     $$ParseLogsTableCreateCompanionBuilder,
     $$ParseLogsTableUpdateCompanionBuilder,
-    (ParseLog, BaseReferences<_$AppDatabase, $ParseLogsTable, ParseLog>),
-    ParseLog,
+    (ParseLogRow, BaseReferences<_$AppDatabase, $ParseLogsTable, ParseLogRow>),
+    ParseLogRow,
     PrefetchHooks Function()> {
   $$ParseLogsTableTableManager(_$AppDatabase db, $ParseLogsTable table)
       : super(TableManagerState(
@@ -3597,8 +3598,8 @@ class $$ParseLogsTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable<$ParseLogsTable, ParseLog>(table),
-                    BaseReferences<_$AppDatabase, $ParseLogsTable, ParseLog>(
+                    e.readTable<$ParseLogsTable, ParseLogRow>(table),
+                    BaseReferences<_$AppDatabase, $ParseLogsTable, ParseLogRow>(
                         db, table, e)
                   ))
               .toList(),
@@ -3609,14 +3610,14 @@ class $$ParseLogsTableTableManager extends RootTableManager<
 typedef $$ParseLogsTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
     $ParseLogsTable,
-    ParseLog,
+    ParseLogRow,
     $$ParseLogsTableFilterComposer,
     $$ParseLogsTableOrderingComposer,
     $$ParseLogsTableAnnotationComposer,
     $$ParseLogsTableCreateCompanionBuilder,
     $$ParseLogsTableUpdateCompanionBuilder,
-    (ParseLog, BaseReferences<_$AppDatabase, $ParseLogsTable, ParseLog>),
-    ParseLog,
+    (ParseLogRow, BaseReferences<_$AppDatabase, $ParseLogsTable, ParseLogRow>),
+    ParseLogRow,
     PrefetchHooks Function()>;
 typedef $$SyncOutboxTableCreateCompanionBuilder = SyncOutboxCompanion Function({
   required String id,

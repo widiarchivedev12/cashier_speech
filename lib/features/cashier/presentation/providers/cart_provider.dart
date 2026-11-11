@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
+import 'package:voice_parser/voice_parser.dart';
 
 import '../../../../core/providers/app_state_provider.dart';
 import '../../../../core/providers/database_provider.dart';
@@ -63,6 +64,60 @@ class CartNotifier extends _$CartNotifier {
 
   void setRawTranscript(String transcript) {
     state = state.copyWith(rawTranscript: transcript);
+  }
+
+  void applyParseResult(
+    ParseResult result,
+    List<CatalogEntry> catalog,
+    String transcript,
+  ) {
+    final catalogMap = {for (final e in catalog) e.productId: e};
+    var items = state.items.toList();
+    int? newPaid = state.paid;
+
+    for (final cmd in result.commands) {
+      switch (cmd) {
+        case AddItem():
+          final entry = catalogMap[cmd.productId];
+          if (entry == null) continue;
+          final idx = items.indexWhere((i) => i.productId == cmd.productId);
+          if (idx >= 0) {
+            items[idx] = items[idx].copyWith(
+              qty: items[idx].qty + cmd.qty,
+              confidence: cmd.confidence,
+              sourceText: cmd.sourceText,
+              lineTotalOverride: cmd.lineTotalOverride,
+            );
+          } else {
+            items.add(CartItem(
+              id: _uuid.v4(),
+              productId: cmd.productId,
+              productName: entry.name,
+              unitPrice: entry.price,
+              qty: cmd.qty,
+              lineTotalOverride: cmd.lineTotalOverride,
+              confidence: cmd.confidence,
+              sourceText: cmd.sourceText,
+            ));
+          }
+        case RemoveItem():
+          items.removeWhere((i) => i.productId == cmd.productId);
+        case RemoveLast():
+          if (items.isNotEmpty) items.removeLast();
+        case ClearCart():
+          items = [];
+        case SetPayment():
+          newPaid = cmd.amount;
+        case Unknown():
+          break;
+      }
+    }
+
+    state = state.copyWith(
+      items: items,
+      paid: newPaid,
+      rawTranscript: transcript,
+    );
   }
 
   void clearCart() {
