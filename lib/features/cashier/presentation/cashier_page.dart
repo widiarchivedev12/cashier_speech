@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:voice_parser/voice_parser.dart';
 
+import '../../../core/sync/sync_provider.dart';
+import '../../auth/presentation/providers/auth_provider.dart';
 import '../../catalog/presentation/providers/product_providers.dart';
 import '../../voice/presentation/providers/voice_provider.dart';
 import '../domain/cart.dart';
@@ -59,6 +61,7 @@ class _CashierPageState extends ConsumerState<CashierPage> {
               icon: const Icon(Icons.delete_outline),
               label: const Text('Bersihkan'),
             ),
+          const _SyncButton(),
         ],
       ),
       drawer: Drawer(
@@ -76,6 +79,14 @@ class _CashierPageState extends ConsumerState<CashierPage> {
               onTap: () {
                 Navigator.pop(context);
                 context.go('/catalog');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Keluar'),
+              onTap: () async {
+                Navigator.pop(context);
+                await ref.read(authProvider.notifier).signOut();
               },
             ),
           ],
@@ -318,6 +329,33 @@ class _CartSummaryState extends ConsumerState<_CartSummary> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SyncButton extends ConsumerWidget {
+  const _SyncButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final status = ref.watch(syncProvider);
+    return IconButton(
+      tooltip: 'Sinkronisasi',
+      onPressed: status == SyncStatus.syncing
+          ? null
+          : () => ref.read(syncProvider.notifier).sync(),
+      icon: status == SyncStatus.syncing
+          ? const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Icon(
+              status == SyncStatus.error ? Icons.sync_problem : Icons.sync,
+              color: status == SyncStatus.error
+                  ? Theme.of(context).colorScheme.error
+                  : null,
+            ),
     );
   }
 }

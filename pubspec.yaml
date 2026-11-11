@@ -39,6 +39,7 @@ dependencies:
   # Utilities
   uuid: ^4.4.0
   intl: ^0.20.3
+  shared_preferences: ^2.3.0
 
   # Local package
   voice_parser:

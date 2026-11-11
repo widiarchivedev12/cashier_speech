@@ -2631,6 +2631,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final TransactionDao transactionDao =
       TransactionDao(this as AppDatabase);
   late final ParseLogDao parseLogDao = ParseLogDao(this as AppDatabase);
+  late final SyncOutboxDao syncOutboxDao = SyncOutboxDao(this as AppDatabase);
+  late final SyncStateDao syncStateDao = SyncStateDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
