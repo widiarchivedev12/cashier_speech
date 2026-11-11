@@ -35,4 +35,7 @@ class ProductDao extends DatabaseAccessor<AppDatabase> with _$ProductDaoMixin {
         await into(products).insertOnConflictUpdate(product);
         await into(syncOutbox).insert(outbox);
       });
+
+  Future<void> upsertFromSync(ProductsCompanion product) =>
+      into(products).insertOnConflictUpdate(product);
 }

@@ -57,4 +57,18 @@ class TransactionDao extends DatabaseAccessor<AppDatabase>
           updatedAt: Value(updatedAt),
         ),
       );
+
+  Future<void> upsertTxnFromSync(
+    TransactionsCompanion txn,
+    List<TransactionItemsCompanion> items,
+  ) =>
+      transaction(() async {
+        await into(transactions).insertOnConflictUpdate(txn);
+        await (delete(transactionItems)
+              ..where((t) => t.transactionId.equals(txn.id.value)))
+            .go();
+        for (final item in items) {
+          await into(transactionItems).insert(item);
+        }
+      });
 }
