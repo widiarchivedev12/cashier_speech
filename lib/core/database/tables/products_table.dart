@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../converters.dart';
 
+@DataClassName('ProductRow')
 class Products extends Table {
   TextColumn get id => text()();
   TextColumn get storeId => text()();
