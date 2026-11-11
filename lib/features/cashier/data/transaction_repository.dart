@@ -98,6 +98,49 @@ class TransactionRepository {
     return txnId;
   }
 
+  Future<void> cancelTransaction(String id) async {
+    final now = DateTime.now().toUtc();
+    final txn = await _db.transactionDao.getById(id);
+    if (txn == null) return;
+    final items = await _db.transactionDao.getItemsFor(id);
+
+    final outbox = SyncOutboxCompanion.insert(
+      id: _uuid.v4(),
+      entity: 'transactions',
+      recordId: id,
+      op: 'upsert',
+      payload: jsonEncode({
+        'transaction': {
+          'id': txn.id,
+          'store_id': txn.storeId,
+          'device_id': txn.deviceId,
+          'receipt_no': txn.receiptNo,
+          'total': txn.total,
+          'paid': txn.paid,
+          'change': txn.change,
+          'source': txn.source,
+          'raw_transcript': txn.rawTranscript,
+          'created_at': txn.createdAt.toIso8601String(),
+          'updated_at': now.toIso8601String(),
+          'deleted_at': now.toIso8601String(),
+        },
+        'items': items
+            .map((i) => {
+                  'id': i.id,
+                  'product_id': i.productId,
+                  'product_name': i.productName,
+                  'unit_price': i.unitPrice,
+                  'qty': i.qty,
+                  'line_total': i.lineTotal,
+                })
+            .toList(),
+      }),
+      createdAt: now,
+    );
+
+    await _db.transactionDao.softDeleteWithOutbox(id, now, outbox);
+  }
+
   static Map<String, dynamic> _buildTxnPayload({
     required String txnId,
     required String storeId,
