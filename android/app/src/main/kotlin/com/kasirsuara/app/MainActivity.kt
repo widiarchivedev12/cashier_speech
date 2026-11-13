@@ -1,4 +1,4 @@
-package com.example.cashier_speech
+package com.kasirsuara.app
 
 import io.flutter.embedding.android.FlutterActivity
 
